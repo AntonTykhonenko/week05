@@ -1,6 +1,19 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 
-app = FastAPI()
+from database import start_db
+from Routers.species import router as species_router
+
+
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    start_db()
+    yield
+
+
+app = FastAPI(lifespan=lifespan)
+app.include_router(species_router)
 
 @app.get("/")
 async def root():
